@@ -54,7 +54,7 @@ public class ProfileDto {
 
     private Long accountId;
 
-    private Boolean primary;
+    private Boolean defaultProfile;
 
 //    private String location;
 //

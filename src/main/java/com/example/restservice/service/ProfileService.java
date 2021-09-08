@@ -65,11 +65,11 @@ public class ProfileService {
         returnValue.setTwitter(profileDto.getTwitter());
         returnValue.setLinkedin(profileDto.getLinkedin());
         returnValue.setWebsite(profileDto.getWebsite());
-        returnValue.setPrimary(profileDto.getPrimary());//boolean
-        if (profileDto.getPrimary()){
-                Profile defaultProfile = profileRepository.findByPrimary(true);
+        returnValue.setDefaultProfile(profileDto.getDefaultProfile());//boolean
+        if (profileDto.getDefaultProfile()){
+                Profile defaultProfile = profileRepository.findByDefaultProfile(true);
                 if (defaultProfile != null) {
-                    defaultProfile.setPrimary(false);
+                    defaultProfile.setDefaultProfile(false);
                     profileRepository.save(defaultProfile);
                 }
             }
@@ -130,11 +130,11 @@ public class ProfileService {
             existingProfile.setTwitter(profile.getTwitter());
             existingProfile.setLinkedin(profile.getLinkedin());
             existingProfile.setWebsite(profile.getWebsite());
-            existingProfile.setPrimary(profile.getPrimary());//boolean
-            if (profile.getPrimary()){
-                Profile defaultProfile = profileRepository.findByPrimary(true);
+            existingProfile.setDefaultProfile(profile.getDefaultProfile());//boolean
+            if (profile.getDefaultProfile()){
+                Profile defaultProfile = profileRepository.findByDefaultProfile(true);
                 if (defaultProfile != null) {
-                    defaultProfile.setPrimary(false);
+                    defaultProfile.setDefaultProfile(false);
                     profileRepository.save(defaultProfile);
                 }
             }

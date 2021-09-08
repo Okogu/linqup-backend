@@ -112,10 +112,10 @@ public class Profile {
             columnDefinition = "TEXT"
     )
     private String website;
-    @Column(name = "default",
+    @Column(name = "default_profile",
             columnDefinition = "BOOLEAN DEFAULT false" ///revert
     )
-    private Boolean primary;
+    private Boolean defaultProfile;
 
     @ManyToOne()
     private Account account;

@@ -15,7 +15,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findById(@Param("id") Long id);
 
-    Profile findByPrimary(@Param("primary") Boolean primary);
+    Profile findByDefaultProfile(@Param("defaultProfile") Boolean defaultProfile);
 
     //   @Query("DELETE FROM Profile  WHERE profileName = ?1")
 //    Profile delete(@Param("profileName")String profileName);
