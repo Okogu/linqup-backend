@@ -52,13 +52,6 @@ public class ProfileDto {
 
     private String website;
 
-    private Long accountId;
+    private Boolean defaultProfile = false;
 
-    private Boolean defaultProfile;
-
-//    private String location;
-//
-//    private String category;
-//
-//    private String recipient;
 }

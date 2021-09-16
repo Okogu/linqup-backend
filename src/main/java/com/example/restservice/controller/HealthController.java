@@ -17,8 +17,8 @@ public class HealthController {
     public ApiResponse fetchProfiles() {
         ApiResponse apiResponse = new ApiResponse();
 
-            apiResponse.setSuccess(true);
-            apiResponse.setMessage("Linqup backend is running");
+        apiResponse.setSuccess(true);
+        apiResponse.setMessage("Linqup backend is running");
 
         return apiResponse;
 

@@ -1,18 +1,14 @@
-package com.example.restservice.controller;
+package com.example.restservice.out;
 
 import com.example.restservice.dto.ApiResponse;
 import com.example.restservice.dto.EventDto;
-import com.example.restservice.entity.Event;
-import com.example.restservice.repository.EventRepository;
-import com.example.restservice.service.EventService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.MediaType;
 import java.text.ParseException;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+
 @Log4j2
 @RestController
 

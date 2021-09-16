@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.MediaType;
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,10 +22,10 @@ public class ContactController {
 
     @GetMapping("/contact")
     @ResponseBody
-    public ApiResponse fetchContacts() {
+    public ApiResponse fetchContacts(Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            apiResponse.setData(contactService.fetchContacts());
+            apiResponse.setData(contactService.fetchContacts(principal.getName()));
             apiResponse.setSuccess(true);
         } catch (Exception e) {
             apiResponse.setSuccess(false);
@@ -51,13 +52,12 @@ public class ContactController {
     }
 
 
-    @DeleteMapping(value = "/contact/{id}",
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
+    @DeleteMapping(value = "/contact/del/{id}",
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ApiResponse deleteContact(@PathVariable Long id) {
+    public ApiResponse deleteContact(@PathVariable Long id, Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            contactService.deleteContact(id);
+            contactService.deleteContact(id, principal.getName());
             apiResponse.setSuccess(true);
 
         } catch (Exception e) {

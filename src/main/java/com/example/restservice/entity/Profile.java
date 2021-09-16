@@ -20,13 +20,10 @@ import static javax.persistence.GenerationType.SEQUENCE;
         name = "profile",
         uniqueConstraints = {
                 @UniqueConstraint(
-                name = "profile_specialId_unique",
-                columnNames = "special_id")
+                        name = "profile_specialId_unique",
+                        columnNames = "special_id")
         })
 public class Profile {
-//    public Set<Account> getCreatedAccount() {
-//        return createdAccount;
-//    }
 
     @Id
     @SequenceGenerator(name = "profile_sequence",
@@ -35,11 +32,9 @@ public class Profile {
     @GeneratedValue(strategy = SEQUENCE,
             generator = "profile_sequence")
 
-    //private Set<Account> createdAccount = new HashSet<>();
     @Column(name = "id",
             updatable = false,
             nullable = false
-            //, columnDefinition = "TEXT"
     )
     private Long id;
 
@@ -117,10 +112,7 @@ public class Profile {
     )
     private Boolean defaultProfile;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
-//
-//    @OneToOne()
-//    private Contact contact;
 
 }

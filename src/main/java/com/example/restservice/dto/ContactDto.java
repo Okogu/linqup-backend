@@ -5,7 +5,7 @@ import java.util.Date;
 public class ContactDto {
 
 
-    private String profileName;
+//    private String profileName;
 
     private String name;
 
@@ -36,8 +36,6 @@ public class ContactDto {
     private Long accountId;
 
     private Long senderProfileId;
-
-    private Long recipientAccountId;
 
     private String location;
 

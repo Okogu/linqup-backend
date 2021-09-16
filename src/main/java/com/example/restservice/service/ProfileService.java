@@ -1,32 +1,19 @@
 package com.example.restservice.service;
 
-import com.example.restservice.dto.ApiResponse;
 import com.example.restservice.dto.ProfileDto;
-import com.example.restservice.dto.ShareProfileDto;
+import com.example.restservice.dto.ReceiveProfileDto;
 import com.example.restservice.entity.Account;
 import com.example.restservice.entity.Contact;
 import com.example.restservice.entity.Profile;
-import com.example.restservice.repository.ContactRepository;
 import com.example.restservice.repository.ProfileRepository;
-import net.bytebuddy.implementation.bytecode.Throw;
 import net.glxn.qrgen.javase.QRCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.client.RestTemplate;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.Date;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,10 +29,10 @@ public class ProfileService {
     private ContactService contactService;
 
     //profile controller depends on profile service
-    public Profile createProfile(ProfileDto profileDto) throws Exception {
-        Optional<Account> existingAccountOptional = accountService.findById(profileDto.getAccountId());//revert
+    public Profile createProfile(ProfileDto profileDto, String email) throws Exception {
+        Account existingAccountOptional = accountService.findByEmail(email);//revert
 
-        if (existingAccountOptional.isEmpty()) {
+        if (existingAccountOptional == null) {
             throw new Exception("Account does not exist");
         }
 
@@ -66,17 +53,17 @@ public class ProfileService {
         returnValue.setLinkedin(profileDto.getLinkedin());
         returnValue.setWebsite(profileDto.getWebsite());
         returnValue.setDefaultProfile(profileDto.getDefaultProfile());//boolean
-        if (profileDto.getDefaultProfile()){
-                Profile defaultProfile = profileRepository.findByDefaultProfile(true);
-                if (defaultProfile != null) {
-                    defaultProfile.setDefaultProfile(false);
-                    profileRepository.save(defaultProfile);
-                }
+        if (profileDto.getDefaultProfile()) {
+            Profile defaultProfile = profileRepository.findByDefaultProfile(true);
+            if (defaultProfile != null) {
+                defaultProfile.setDefaultProfile(false);
+                profileRepository.save(defaultProfile);
             }
-        returnValue.setAccount(existingAccountOptional.get());
+        }
+        returnValue.setAccount(existingAccountOptional);
         UUID uuid = UUID.randomUUID();
         returnValue.setSpecialId(uuid.toString());
-
+//Todo: delegate qr generator to the ui
         ByteArrayOutputStream stream = QRCode
                 .from(returnValue.getSpecialId())
                 .withSize(250, 250)
@@ -90,8 +77,13 @@ public class ProfileService {
         return profileRepository.save(returnValue);
     }
 
-    public List<Profile> fetchProfiles() {
-        return profileRepository.findAll();
+    public List<Profile> fetchProfiles(String email) throws Exception {
+        Account existingAccountOptional = accountService.findByEmail(email);
+        if (existingAccountOptional == null) {
+            throw new Exception("Account with email: " + email + " does not exist");
+        } else {
+            return profileRepository.findByAccount(existingAccountOptional);
+        }
     }
 
     public Profile viewProfile(String profileName) {
@@ -110,7 +102,6 @@ public class ProfileService {
     public Profile updateProfile(Profile profile) throws Exception {
         Optional<Profile> existingProfileOptional = profileRepository.findById(profile.getId());
 
-        //Profile existingProfile = profileRepository.getById(profile.getId());
         if (existingProfileOptional.isEmpty()) {
             throw new Exception("Profile does not exist");
         } else {
@@ -131,7 +122,7 @@ public class ProfileService {
             existingProfile.setLinkedin(profile.getLinkedin());
             existingProfile.setWebsite(profile.getWebsite());
             existingProfile.setDefaultProfile(profile.getDefaultProfile());//boolean
-            if (profile.getDefaultProfile()){
+            if (profile.getDefaultProfile()) {
                 Profile defaultProfile = profileRepository.findByDefaultProfile(true);
                 if (defaultProfile != null) {
                     defaultProfile.setDefaultProfile(false);
@@ -145,33 +136,50 @@ public class ProfileService {
 
     }
 
-    public void shareProfile(ShareProfileDto shareProfileDto) throws Exception {
-        Optional<Profile> existingProfileOptional = profileRepository.findById(shareProfileDto.getSenderProfileId());
+    public void receiveProfile(ReceiveProfileDto receiveProfileDto, String recipientEmail) throws Exception {
+        Profile senderProfile = profileRepository.findBySpecialId(receiveProfileDto.getSenderProfileSpecialId());
 
         // steps for sharing profile:
         // step 1: check if sender profile exists upon receiving it from the user
-        if (existingProfileOptional.isEmpty()) {
+        if (senderProfile == null) {
             throw new Exception("Profile does not exist");
         }
         //        step 2: check if recipient account exists
 
-        Optional<Account> existingAccountOptional = accountService.findById(shareProfileDto.getRecipientAccountId());//revert back
+        Account existingAccount = accountService.findByEmail(recipientEmail);//revert back
 
-        if (existingAccountOptional.isEmpty()) {
-            throw new Exception("Account does not exist");
+        if (existingAccount == null) {
+            throw new Exception("Account with email: " + recipientEmail + " does not exist");
+        }
+        if (existingAccount.getId() == senderProfile.getAccount().getId()) {
+            throw new Exception("Cannot send your own profile to yourself");
+        }
+//check if contact already exists
+        Contact existingContact = contactService.findBySpecialId(receiveProfileDto.getSenderProfileSpecialId());
+        if (existingContact != null) {
+            throw new Exception("contact already exists");
         }
 
         //profile and account exists
         //        step 3: transfer profile and account details to contacts
         Contact contact = new Contact();
-        contact.setProfile(existingProfileOptional.get());
-        contact.setLocation(shareProfileDto.getLocation());
-        contact.setAccount(existingAccountOptional.get());
+        contact.setSpecialId(senderProfile.getSpecialId());
+        contact.setName(senderProfile.getName());
+        contact.setLocation(receiveProfileDto.getLocation());
+        contact.setAccount(existingAccount);
 
 //      step 3: save contact
 
         contactService.saveContact(contact);
 
 
+    }
+
+    public void deleteByAccount(Account account) {
+        profileRepository.deleteByAccount(account);
+    }
+
+    public void deleteAccountById(Long id) {
+        profileRepository.deleteAccountById(id);
     }
 }

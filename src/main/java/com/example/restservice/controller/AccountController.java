@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.MediaType;
 
+import java.security.Principal;
+
+import static com.example.restservice.config.SecurityConstants.SIGN_UP_URL;
+
 @Log4j2
 @RestController
 
@@ -20,10 +24,14 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @PostMapping(value = "/account",
+    @PostMapping(value = SIGN_UP_URL,
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Account createAccount(@RequestBody AccountDto accountDto) {
+    //Original
+//    public Account createAccount(@RequestBody AccountDto accountDto) {
+//        return accountService.createAccount(accountDto);
+//    }
+    public Account createAccount(@RequestBody AccountDto accountDto) throws Exception {
         return accountService.createAccount(accountDto);
     }
 
@@ -43,54 +51,53 @@ public class AccountController {
     }
 
 
-    @GetMapping("/account/{fullName}")
+    @GetMapping("/account/{email}")
     @ResponseBody
-    public ApiResponse viewAccount(@PathVariable String fullName) {
+    public ApiResponse findByEmail(@PathVariable String email) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            apiResponse.setData(accountService.viewAccount(fullName));
+            apiResponse.setData(accountService.findByEmail(email));
             apiResponse.setSuccess(true);
         } catch (Exception e) {
             apiResponse.setSuccess(false);
-            apiResponse.setMessage("An error occurred while fetching account:" + fullName);
+            apiResponse.setMessage("An error occurred while fetching account:" + email);
 
         }
         return apiResponse;
     }
 
 
-    @DeleteMapping(value = "/account/{fullName}",
-            consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
+    @DeleteMapping(value = "/account/del",
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ApiResponse deleteAccount(@PathVariable String fullName) {
+    public ApiResponse deleteAccount(Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            accountService.deleteAccount(fullName);
+            accountService.deleteAccount(principal.getName());
             apiResponse.setSuccess(true);
 
         } catch (Exception e) {
             apiResponse.setSuccess(false);
-            apiResponse.setMessage("An error occurred while deleting account:" + fullName);
+            apiResponse.setMessage("An error occurred while deleting account:" + principal.getName());
         }
         return apiResponse;
 
     }
 
 
-    @PatchMapping(value = "/account/{fullName}",
+    @PatchMapping(value = "/account/mod",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ApiResponse editAccount(@RequestBody Account account) {
+    public ApiResponse editAccount(@RequestBody AccountDto accountDto, Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            apiResponse.setData(accountService.editAccount(account));
+            apiResponse.setData(accountService.editAccount(accountDto, principal.getName()));
             apiResponse.setSuccess(true);
 
         } catch (Exception e) {
             apiResponse.setSuccess(false);
             apiResponse.setMessage("An error occurred while updating account");
 
-//            apiResponse.setMessage("An error occurred while updating account:" + account.getId());
+
             log.info(e);
         }
         return apiResponse;

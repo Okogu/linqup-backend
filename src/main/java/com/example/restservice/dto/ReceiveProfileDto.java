@@ -11,11 +11,9 @@ import javax.persistence.ManyToOne;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ShareProfileDto {
+public class ReceiveProfileDto {
 
-    private Long senderProfileId;
-
-    private Long recipientAccountId;
+    private String senderProfileSpecialId;
 
     private String location;
 

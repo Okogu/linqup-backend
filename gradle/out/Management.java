@@ -1,4 +1,4 @@
-package com.example.restservice.entity;
+package com.example.restservice.out;
 
 import lombok.*;
 

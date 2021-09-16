@@ -2,7 +2,7 @@ package com.example.restservice.controller;
 
 import com.example.restservice.dto.ApiResponse;
 import com.example.restservice.dto.ProfileDto;
-import com.example.restservice.dto.ShareProfileDto;
+import com.example.restservice.dto.ReceiveProfileDto;
 import com.example.restservice.entity.Profile;
 import com.example.restservice.service.ProfileService;
 import lombok.extern.log4j.Log4j2;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.MediaType;
+import java.security.Principal;
 
 //controller should handle the response
 @Log4j2
@@ -22,11 +23,11 @@ public class ProfileController {
     @PostMapping(value = "/profile",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ApiResponse createProfile(@RequestBody ProfileDto profileDto) {
+    public ApiResponse createProfile(@RequestBody ProfileDto profileDto, Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
 
         try {
-            apiResponse.setData(profileService.createProfile(profileDto));
+            apiResponse.setData(profileService.createProfile(profileDto, principal.getName()));
             apiResponse.setSuccess(true);
         } catch (Exception e) {
             apiResponse.setSuccess(false);
@@ -36,18 +37,13 @@ public class ProfileController {
 
     }
 
-//    public int addTwoNum(int a, int b){
-//        int c = a + b;
-//        return c;
-//    }
 
-
-    @GetMapping("/profile")
+    @GetMapping("/profile/all")
     @ResponseBody
-    public ApiResponse fetchProfiles() {
+    public ApiResponse fetchProfiles(Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            apiResponse.setData(profileService.fetchProfiles());
+            apiResponse.setData(profileService.fetchProfiles(principal.getName()));
             apiResponse.setSuccess(true);
         } catch (Exception e) {
             apiResponse.setSuccess(false);
@@ -74,7 +70,7 @@ public class ProfileController {
     }
 
 
-    @DeleteMapping(value = "/profile/{profileName}",
+    @DeleteMapping(value = "/profile/del/{profileName}",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public ApiResponse deleteProfile(@PathVariable String profileName) {
@@ -92,7 +88,7 @@ public class ProfileController {
     }
 
 
-    @PatchMapping(value = "/profile/{profileName}",
+    @PatchMapping(value = "/profile/mod/{profileName}",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public ApiResponse updateProfile(@RequestBody Profile profile) {
@@ -111,21 +107,20 @@ public class ProfileController {
         return apiResponse;
     }
 
-    @PostMapping(value = "/profile/share",
+    @PostMapping(value = "/profile/receive",
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ApiResponse shareProfile(@RequestBody ShareProfileDto shareProfileDto) {
+    public ApiResponse receiveProfile(@RequestBody ReceiveProfileDto receiveProfileDto, Principal principal) {
         ApiResponse apiResponse = new ApiResponse();
         try {
-            profileService.shareProfile(shareProfileDto);
+            profileService.receiveProfile(receiveProfileDto, principal.getName());
             apiResponse.setSuccess(true);
         } catch (Exception e) {
             apiResponse.setSuccess(false);
-            apiResponse.setMessage("An exception occurred. Could not share profile");
+            apiResponse.setMessage("An exception occurred. Could not receive profile");
             log.error(e);
         }
         return apiResponse;
     }
-//    @PatchMapping(value = "/profile/{profileName}")
 }
 

@@ -1,23 +1,12 @@
-package com.example.restservice.service;
+package com.example.restservice.out;
 
 import com.example.restservice.dto.EventDto;
-import com.example.restservice.entity.Event;
-import com.example.restservice.entity.Profile;
-import com.example.restservice.repository.EventRepository;
-import com.example.restservice.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EventService {

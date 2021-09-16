@@ -4,23 +4,55 @@ import com.example.restservice.dto.AccountDto;
 import com.example.restservice.entity.Account;
 import com.example.restservice.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AccountService {
+public class AccountService implements UserDetailsService {
+
+    @Autowired
+    ProfileService profileService;
+
+    @Autowired
+    ContactService contactService;
+
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account createAccount(AccountDto accountDto) {
-        Account returnValue = new Account();
-        returnValue.setFullName(accountDto.getFullName());
-        returnValue.setEmail(accountDto.getEmail());
-        returnValue.setPassword(accountDto.getPassword());
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-        return accountRepository.save(returnValue);
+    @Transactional(rollbackFor = Exception.class)
+    //Original
+//    public Account createAccount(AccountDto accountDto) {
+//        Account returnValue = new Account();
+//        returnValue.setFullName(accountDto.getFullName());
+//        returnValue.setEmail(accountDto.getEmail());
+//        returnValue.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
+//
+//        return accountRepository.save(returnValue);
+//    }
+
+    public Account createAccount(AccountDto accountDto) throws Exception {
+        Optional<Account> Existing = Optional.ofNullable(accountRepository.findByEmail(accountDto.getEmail()));
+        if (Existing.isPresent()) {
+            throw new Exception("Email has been used to create an account");
+        } else {
+            Account returnValue = new Account();
+            returnValue.setFullName(accountDto.getFullName());
+            returnValue.setEmail(accountDto.getEmail());
+            returnValue.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
+
+            return accountRepository.save(returnValue);
+        }
     }
 
     public List<Account> fetchAccount() {
@@ -31,39 +63,39 @@ public class AccountService {
         return accountRepository.findById(id);
     }
 
-    public Account viewAccount(String fullName) {
-        return accountRepository.findByFullName(fullName);
+    public Account findByEmail(String email) {
+        return accountRepository.findByEmail(email);
     }
 
-    public Account editAccount(Account account) throws Exception {
-        Optional<Account> createdAccountOptional = accountRepository.findById(account.getId());
-        //Account createdAccount = accountRepository.findByFullName(account.getFullName());
-        if (createdAccountOptional.isEmpty()) {
-            //if (createdAccount == null) {
+    public Account editAccount(AccountDto accountDto, String email) throws Exception {
+        Account createdAccountOptional = accountRepository.findByEmail(email);
+        if (createdAccountOptional == null) {
             throw new Exception("Account does not exist");
         } else {
-            Account createdAccount = createdAccountOptional.get();
-            createdAccount.setFullName(account.getFullName());
-            createdAccount.setEmail(account.getEmail());
-            createdAccount.setPassword(account.getPassword());
-            accountRepository.save(createdAccount);
-            // return createdAccount;
-            return createdAccountOptional.get();
+            createdAccountOptional.setFullName(accountDto.getFullName());
+            createdAccountOptional.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
+            accountRepository.save(createdAccountOptional);
+            return createdAccountOptional;
+
+
         }
     }
 
 
-    public void deleteAccount(String fullName) throws Exception {
-        Account account = accountRepository.findByFullName(fullName);
-        if (fullName == null) {
-            throw new Exception("Account " + account + " does not exist");
+    public void deleteAccount(String email) throws Exception {
+        Account account = accountRepository.findByEmail(email);
+        if (account == null) {
+            throw new Exception("Account with email: " + email + " does not exist");
         } else {
+            profileService.deleteAccountById(account.getId());
+            contactService.deleteAccountById(account.getId());
             accountRepository.deleteById(account.getId());
         }
     }
 
-    //revert
-//    public Optional<Account> findById(Long accountId) {
-//        return null;
-//    }
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return accountRepository.findByEmail(email);
+    }
+
 }

@@ -1,13 +1,13 @@
 package com.example.restservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -27,7 +27,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
         })
 //name of table is same as class but in lowercase
 
-public class Account {
+public class Account implements UserDetails {
 
     @Id
     @SequenceGenerator(name = "account_sequence",
@@ -59,11 +59,41 @@ public class Account {
     @Column(name = "password",
             nullable = false,
             columnDefinition = "TEXT"
-    )    private  String password;
+    )
+    @JsonIgnore
+    private  String password;
 
     @OneToMany(targetEntity = Profile.class, cascade = CascadeType.ALL, mappedBy = "id" )
-//    @JoinColumn(name = "account_fk", referencedColumnName = "id")
 
     private List<Profile> profiles = new ArrayList<>();
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
     }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+}
