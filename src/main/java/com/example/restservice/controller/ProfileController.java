@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.ws.rs.core.MediaType;
 import java.security.Principal;
 
-//controller should handle the response
 @Log4j2
 @RestController
 public class ProfileController {

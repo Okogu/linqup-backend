@@ -17,8 +17,6 @@ import static com.example.restservice.config.SecurityConstants.SIGN_UP_URL;
 
 @Log4j2
 @RestController
-
-
 public class AccountController {
 
     @Autowired
@@ -27,10 +25,6 @@ public class AccountController {
     @PostMapping(value = SIGN_UP_URL,
             consumes = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML},
             produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    //Original
-//    public Account createAccount(@RequestBody AccountDto accountDto) {
-//        return accountService.createAccount(accountDto);
-//    }
     public Account createAccount(@RequestBody AccountDto accountDto) throws Exception {
         return accountService.createAccount(accountDto);
     }
@@ -80,7 +74,6 @@ public class AccountController {
             apiResponse.setMessage("An error occurred while deleting account:" + principal.getName());
         }
         return apiResponse;
-
     }
 
 
@@ -96,7 +89,6 @@ public class AccountController {
         } catch (Exception e) {
             apiResponse.setSuccess(false);
             apiResponse.setMessage("An error occurred while updating account");
-
 
             log.info(e);
         }

@@ -1,11 +1,17 @@
 package com.example.restservice.dto;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Date;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ContactDto {
 
-
-//    private String profileName;
 
     private String name;
 

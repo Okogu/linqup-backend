@@ -45,18 +45,18 @@ public class Contact {
 
     @Column(name = "location",
             updatable = false,
-//            nullable = false,
             columnDefinition = "TEXT"
     )
     private String location;
     @Column(name = "date_received",
-//            updatable = false,
             nullable = false,
             columnDefinition = "TEXT"
     )
     private java.util.Date receivedDate;
+
     @ManyToOne
     private Account account;
+
     @Column(name = "name",
             nullable = false,
             columnDefinition = "TEXT"

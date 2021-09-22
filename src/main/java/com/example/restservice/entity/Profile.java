@@ -5,8 +5,6 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -108,7 +106,7 @@ public class Profile {
     )
     private String website;
     @Column(name = "default_profile",
-            columnDefinition = "BOOLEAN DEFAULT false" ///revert
+            columnDefinition = "BOOLEAN DEFAULT false"
     )
     private Boolean defaultProfile;
 

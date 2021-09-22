@@ -40,7 +40,6 @@ public class Account implements UserDetails {
     @Column(name = "id",
             updatable = false,
             nullable = false
-            //, columnDefinition = "TEXT"
     )
     private Long id;
 
@@ -52,7 +51,6 @@ public class Account implements UserDetails {
     @Column(name = "email",
             nullable = false,
             columnDefinition = "TEXT"
-            //unique = true
     )
     private  String email;
 

@@ -5,12 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-
-import static javax.persistence.GenerationType.SEQUENCE;
 
 //dto is used for operations that does not interact with the database
 

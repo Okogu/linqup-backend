@@ -144,7 +144,7 @@ public class ProfileService {
         if (senderProfile == null) {
             throw new Exception("Profile does not exist");
         }
-        //        step 2: check if recipient account exists
+        // step 2: check if recipient account exists
 
         Account existingAccount = accountService.findByEmail(recipientEmail);//revert back
 

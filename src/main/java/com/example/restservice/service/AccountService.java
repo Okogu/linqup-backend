@@ -31,15 +31,6 @@ public class AccountService implements UserDetailsService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional(rollbackFor = Exception.class)
-    //Original
-//    public Account createAccount(AccountDto accountDto) {
-//        Account returnValue = new Account();
-//        returnValue.setFullName(accountDto.getFullName());
-//        returnValue.setEmail(accountDto.getEmail());
-//        returnValue.setPassword(bCryptPasswordEncoder.encode(accountDto.getPassword()));
-//
-//        return accountRepository.save(returnValue);
-//    }
 
     public Account createAccount(AccountDto accountDto) throws Exception {
         Optional<Account> Existing = Optional.ofNullable(accountRepository.findByEmail(accountDto.getEmail()));
